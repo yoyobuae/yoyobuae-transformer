@@ -141,7 +141,7 @@ data:extend(
   },
   {
     type = "electric-energy-interface",
-    name = "yoyobuae-transformer-interface",
+    name = "yoyobuae-transformer-drain-east-west",
     icon = "__base__/graphics/icons/accumulator.png",
     flags = {"placeable-neutral", "player-creation"},
     max_health = -1,
@@ -153,11 +153,108 @@ data:extend(
     {
       type = "electric",
       buffer_capacity = "6MJ",
-      usage_priority = "terciary",
+      usage_priority = "secondary-input",
+      input_flow_limit = "6MW",
+      output_flow_limit = "0W"
+    },
+    picture = transparent_pic,
+    order = "z",
+  },
+  {
+    type = "electric-energy-interface",
+    name = "yoyobuae-transformer-source-east-west",
+    icon = "__base__/graphics/icons/accumulator.png",
+    flags = {"placeable-neutral", "player-creation"},
+    max_health = -1,
+    corpse = "medium-remnants",
+    collision_mask = {"ghost-layer"},
+    collision_box = {{-0.4, -0.9}, {0.4, 0.9}},
+    selection_box = {{-0.5, -1}, {0.5, 1}},
+    energy_source =
+    {
+      type = "electric",
+      buffer_capacity = "6MJ",
+      usage_priority = "secondary-output",
       input_flow_limit = "6MW",
       output_flow_limit = "6MW"
     },
     picture = transparent_pic,
+    order = "z",
+  },
+  {
+    type = "electric-energy-interface",
+    name = "yoyobuae-transformer-drain-north-south",
+    icon = "__base__/graphics/icons/accumulator.png",
+    flags = {"placeable-neutral", "player-creation"},
+    max_health = -1,
+    corpse = "medium-remnants",
+    collision_mask = {"ghost-layer"},
+    collision_box = {{-0.9, -0.4}, {0.9, 0.4}},
+    selection_box = {{-1, -0.5}, {1, 0.5}},
+    energy_source =
+    {
+      type = "electric",
+      buffer_capacity = "6MJ",
+      usage_priority = "secondary-input",
+      input_flow_limit = "6MW",
+      output_flow_limit = "0W"
+    },
+    picture = transparent_pic,
+    order = "z",
+  },
+  {
+    type = "electric-energy-interface",
+    name = "yoyobuae-transformer-source-north-south",
+    icon = "__base__/graphics/icons/accumulator.png",
+    flags = {"placeable-neutral", "player-creation"},
+    max_health = -1,
+    corpse = "medium-remnants",
+    collision_mask = {"ghost-layer"},
+    collision_box = {{-0.9, -0.4}, {0.9, 0.4}},
+    selection_box = {{-1, -0.5}, {1, 0.5}},
+    energy_source =
+    {
+      type = "electric",
+      buffer_capacity = "6MJ",
+      usage_priority = "secondary-output",
+      input_flow_limit = "6MW",
+      output_flow_limit = "6MW"
+    },
+    picture = transparent_pic,
+    order = "z",
+  },
+  {
+    type = "inserter",
+    name = "yoyobuae-transformer-arrow",
+    icon = "__base__/graphics/icons/accumulator.png",
+    flags = {"placeable-neutral", "player-creation"},
+    max_health = -1,
+    corpse = "medium-remnants",
+    collision_mask = {"ghost-layer"},
+    collision_box = {{-0.9, -0.9}, {0.9, 0.9}},
+    selection_box = {{-1, -1}, {1, 1}},
+    pickup_position = {-1.2, 0},
+    insert_position = {1.2, 0},
+    rotation_speed = 0.0,
+    extension_speed = 0.0,
+    platform_picture =
+    {
+      sheet = transparent_pic,
+    },
+    hand_base_picture = transparent_pic,
+    hand_closed_picture = transparent_pic,
+    hand_open_picture = transparent_pic,
+    hand_base_shadow = transparent_pic,
+    hand_closed_shadow = transparent_pic,
+    hand_open_shadow = transparent_pic,
+    energy_per_movement = 0,
+    energy_per_rotation = 0,
+    energy_source =
+    {
+      type = "burner",
+      effectivity = 1,
+      fuel_inventory_size = 1,
+    },
     order = "z",
   },
 })

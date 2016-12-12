@@ -19,11 +19,35 @@ script.on_event(defines.events.on_robot_pre_mined, function(event) OnRemoved(eve
 script.on_event(defines.events.on_entity_died, function(event) OnRemoved(event.entity) end)
 
 local function transformerIstransformer(entity)
-	if (entity.name == "yoyobuae-transformer") then
-		return true
-	else
-		return false
-	end
+  if (entity.name == "yoyobuae-transformer") then
+    return true
+  else
+    return false
+  end
+end
+
+local function transformerGetDrainPosition(direction)
+  if direction == 6 then return {x = 0, y = 0.5}   -- north
+  elseif direction == 0 then return {x = -0.5, y = 0}  -- east
+  elseif direction == 2 then return {x = 0, y = -0.5}  -- south
+  else return {x = 0.5, y = 0}   -- west
+  end
+end
+
+local function transformerGetSourcePosition(direction)
+  if direction == 6 then return {x = 0, y = -0.5}   -- north
+  elseif direction == 0 then return {x = 0.5, y = 0}  -- east
+  elseif direction == 2 then return {x = 0, y = 0.5}  -- south
+  else return {x = -0.5, y = 0}   -- west
+  end
+end
+
+local function transformerGetSourceDrainType(direction)
+  if direction == 6 then return "north-south"   -- north
+  elseif direction == 0 then return "east-west"  -- east
+  elseif direction == 2 then return "north-south"  -- south
+  else return "east-west"   -- west
+  end
 end
 
 function OnBuilt(entity)
@@ -31,15 +55,23 @@ function OnBuilt(entity)
     -- game.players[1].print("Transformer built at {" .. entity.position.x .. ", " .. entity.position.y .. "}")
     -- entity.operable = false
     local struct = { transformer = entity }
-    local drain_pos = { x = entity.position.x - 0.5, y = entity.position.y }
-    local source_pos = { x = entity.position.x + 0.5, y = entity.position.y }
+    local drain_pos = transformerGetDrainPosition(entity.direction)
+    local source_pos = transformerGetSourcePosition(entity.direction)
+    drain_pos.x = drain_pos.x + entity.position.x
+    drain_pos.y = drain_pos.y + entity.position.y
+    source_pos.x = source_pos.x + entity.position.x
+    source_pos.y = source_pos.y + entity.position.y
+    local source_drain_type = transformerGetSourceDrainType(entity.direction)
     local create = entity.surface.create_entity
-    local drain = create{name = "yoyobuae-transformer-interface", position = drain_pos, force = entity.force}
-    local source = create{name = "yoyobuae-transformer-interface", position = source_pos, force = entity.force}
+    local drain = create{name = "yoyobuae-transformer-drain-"..source_drain_type, position = drain_pos, force = entity.force}
+    local source = create{name = "yoyobuae-transformer-source-"..source_drain_type, position = source_pos, force = entity.force}
+    local arrow = create{name = "yoyobuae-transformer-arrow", position = entity.position, force = entity.force}
+    arrow.direction = entity.direction
     -- game.players[1].print("Created drain at {" .. drain.position.x .. ", " .. drain.position.y .. "}")
     -- game.players[1].print("Created source at {" .. source.position.x .. ", " .. source.position.y .. "}")
     struct.drain = drain
     struct.source = source
+    struct.arrow = arrow
     table.insert(global["yoyobuae-transformers"], struct)
   end
 end
@@ -64,8 +96,47 @@ function OnRemoved(entity)
     found_struct.drain = nil
     found_struct.source.destroy()
     found_struct.source = nil
+    found_struct.arrow.destroy()
+    found_struct.arrow = nil
   end
 end
+
+script.on_event(defines.events.on_player_rotated_entity, function(event)
+  local entity = event.entity;
+  if transformerIstransformer(entity) then
+    for _, struct in pairs(global["yoyobuae-transformers"]) do
+      if struct.transformer == entity then
+        -- entity.direction = struct.direction
+        game.players[1].print("Transformer rotated to direction " .. entity.direction)
+        local drain_energy = struct.drain.energy
+        local source_energy = struct.source.energy
+        struct.drain.destroy()
+        struct.drain = nil
+        struct.source.destroy()
+        struct.source = nil
+
+        local drain_pos = transformerGetDrainPosition(entity.direction)
+        local source_pos = transformerGetSourcePosition(entity.direction)
+        drain_pos.x = drain_pos.x + entity.position.x
+        drain_pos.y = drain_pos.y + entity.position.y
+        source_pos.x = source_pos.x + entity.position.x
+        source_pos.y = source_pos.y + entity.position.y
+        local source_drain_type = transformerGetSourceDrainType(entity.direction)
+        local create = entity.surface.create_entity
+        local drain = create{name = "yoyobuae-transformer-drain-"..source_drain_type, position = drain_pos, force = entity.force}
+        local source = create{name = "yoyobuae-transformer-source-"..source_drain_type, position = source_pos, force = entity.force}
+
+        drain.energy = drain_energy
+        source.energy = source_energy
+
+        struct.drain = drain
+        struct.source = source
+        struct.arrow.direction = entity.direction
+        break
+      end
+    end
+  end
+end)
 
 
 function my_on_tick()
@@ -81,7 +152,7 @@ function my_on_tick()
       else
         power_transfer = min_power
       end
-      struct.drain.power_usage = power_transfer / 60.0
+      --struct.drain.power_usage = power_transfer / 60.0
       struct.drain.electric_drain = power_transfer / 60.0
       struct.source.power_production = power_transfer / 60.0
 
