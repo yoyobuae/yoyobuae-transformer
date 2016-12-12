@@ -107,7 +107,7 @@ script.on_event(defines.events.on_player_rotated_entity, function(event)
     for _, struct in pairs(global["yoyobuae-transformers"]) do
       if struct.transformer == entity then
         -- entity.direction = struct.direction
-        game.players[1].print("Transformer rotated to direction " .. entity.direction)
+        -- game.players[1].print("Transformer rotated to direction " .. entity.direction)
         local drain_energy = struct.drain.energy
         local source_energy = struct.source.energy
         struct.drain.destroy()
