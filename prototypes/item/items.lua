@@ -1,13 +1,16 @@
+-- vim: et sw=2 ts=2
+
+function generate_transformer_item(limit)
+  local item = table.deepcopy(data.raw["item"]["accumulator"])
+  item.name = "yoyobuae-transformer-" .. limit .. "W"
+  item.icons = { {icon = "__base__/graphics/icons/accumulator.png", tint = {r=0.8, g=1, b=0.8, a=1}} }
+  item.subgroup = "energy-pipe-distribution"
+  item.order = "a[energy]-e[transformer]"
+  item.place_result = "yoyobuae-transformer-" .. limit .. "W"
+  return item
+end
+
 data:extend(
 {
-  {
-    type = "item",
-    name = "yoyobuae-transformer",
-    icon = "__base__/graphics/icons/accumulator.png",
-    flags = {"goes-to-quickbar"},
-    subgroup = "energy",
-    order = "e[accumulator]-a[basic-accumulator]-z",
-    place_result = "yoyobuae-transformer",
-    stack_size = 50
-  },
+  generate_transformer_item("6M"),
 })
